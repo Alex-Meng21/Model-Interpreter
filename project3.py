@@ -10,11 +10,12 @@
 # offloading as much of the complexity as you can into additional modules in
 # the 'grin' package, isolated in a way that allows you to unit test them.
 
-import grin
+from grin import *
 
 
 def main() -> None:
-    pass
+    token_list = read_input()
+    interpret_grin_identifiers(token_list)
 
 
 if __name__ == '__main__':
