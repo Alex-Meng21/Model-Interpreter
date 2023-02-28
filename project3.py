@@ -14,8 +14,16 @@ from grin import *
 
 
 def main() -> None:
-    token_list = read_input()
-    interpret_grin_identifiers(token_list)
+    try:
+        myGrin = GrinInterpreter({})
+        token_list = read_input()
+        myGrin.interpret_grin_identifiers(token_list)
+        myGrin.interpret_input(token_list)
+        myGrin.interpret_arithmetic(token_list)
+
+        myGrin.print_grin(token_list)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':

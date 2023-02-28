@@ -19,4 +19,4 @@ from grin.location import *
 from grin.parsing import *
 from grin.token import *
 from grin.parse_input import *
-from interpret import *
+from grin.interpret import *
