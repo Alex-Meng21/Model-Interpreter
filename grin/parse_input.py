@@ -1,5 +1,6 @@
 from grin import *
 
+
 def read_input():
     grin_statements = []
 
@@ -21,6 +22,17 @@ def read_input():
             print(f)
 
     return grin_statements
+
+def read_input_for_testing(statement:str):
+
+    token_list = []
+    lines = statement.strip().split('\n')
+    parsed_objs = parse(lines)
+    for i in parsed_objs:
+        token_list.append(list(i))
+
+    return token_list
+
 
 
 

@@ -1,20 +1,19 @@
 from grin.token import *
 class GrinInterpreter:
 
-    def __init__(self, var_dictionary):
-        self.var_dictionary = var_dictionary
+    def __init__(self):
+        self.var_dictionary = {}
+        self.label_dictionary = {}
 
+    def obtain_value_from_dict(self, key):
 
-
-#class LET_statements(GrinInterpreter):
-
-    #def __init__(self, token):
-        #super().__init__(token)
+        value = self.var_dictionary[key]
+        return value
     def interpret_grin_identifiers(self, token_list):
 
         for token in token_list:
-            if token[1].text() not in self.var_dictionary:
-                self.var_dictionary[token[1].text] = 0
+            if token[1].text() not in self.var_dictionary and token[1].kind() == GrinTokenKind.IDENTIFIER:
+                self.var_dictionary[token[1].text()] = 0
 
             if token[0].text() == 'LET':
                 var = token[1].text()
@@ -22,6 +21,8 @@ class GrinInterpreter:
                     self.var_dictionary[var] = 0
                 else:
                     self.var_dictionary[var] = token[2].value()
+
+        return self.var_dictionary
 
     def interpret_arithmetic(self, token_list):
 
@@ -33,8 +34,8 @@ class GrinInterpreter:
                     if isinstance(token[2].value(),(int,float)):
                         self.var_dictionary[token[1].text()] = self.var_dictionary.get(token[1].text(),0) + token[2].value()
 
-                    elif isinstance(token[2].value(), str) and token[2].kind() != GrinTokenKind.IDENTIFIER: #isinstance(self.var_dictionary[token[2].text()],str):
-                        self.var_dictionary[token[1].text] += self.var_dictionary.get(token[1].text(),0) + token[2].value()
+                    elif isinstance(token[2].value(), str) and token[2].kind() != GrinTokenKind.IDENTIFIER:
+                        self.var_dictionary[token[1].text()] = self.var_dictionary.get(token[1].text(),0) + token[2].value()
 
                     elif token[2].kind() == GrinTokenKind.IDENTIFIER:
                         self.var_dictionary[token[1].text()] = (self.var_dictionary.get(token[1].text(),0) +
@@ -74,6 +75,7 @@ class GrinInterpreter:
             except ZeroDivisionError as z:
                 print(z)
 
+        return self.var_dictionary
     def interpret_input(self, token_list):
 
         for token in token_list:
@@ -92,9 +94,12 @@ class GrinInterpreter:
                 str_input = input()
                 self.var_dictionary[token[1].text()] = str_input
 
+        return self.var_dictionary
+
 
     def print_grin(self, token_list):
         for token in token_list:
+
             if token[0].text() == 'PRINT':
                 if token[1].text() in self.var_dictionary:
                     print(self.var_dictionary[token[1].text()])
@@ -104,4 +109,5 @@ class GrinInterpreter:
                     print(token[1].text())
                 else:
                     print('0')
+
 

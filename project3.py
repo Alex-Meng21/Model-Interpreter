@@ -15,7 +15,7 @@ from grin import *
 
 def main() -> None:
     try:
-        myGrin = GrinInterpreter({})
+        myGrin = GrinInterpreter()
         token_list = read_input()
         myGrin.interpret_grin_identifiers(token_list)
         myGrin.interpret_input(token_list)
