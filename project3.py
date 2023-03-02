@@ -17,13 +17,12 @@ def main() -> None:
     try:
         myGrin = GrinInterpreter()
         token_list = read_input()
-        myGrin.interpret_grin_identifiers(token_list)
-        myGrin.interpret_input(token_list)
-        myGrin.interpret_arithmetic(token_list)
-
-        myGrin.print_grin(token_list)
+        myGrin.process_grin(token_list)
+        print(myGrin.var_dictionary)
     except Exception as e:
         print(e)
+    except ZeroDivisionError:
+        pass
 
 
 if __name__ == '__main__':

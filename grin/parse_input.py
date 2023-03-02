@@ -16,10 +16,10 @@ def read_input():
                 grin_statements.append(list(i))
 
         except GrinParseError as e:
-            print(e)
+            raise GrinParseError
 
         except GrinLexError as f: #come back to catching the exceptions
-            print(f)
+            raise GrinLexError
 
     return grin_statements
 
