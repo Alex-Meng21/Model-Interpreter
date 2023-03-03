@@ -16,9 +16,11 @@ def read_input():
                 grin_statements.append(list(i))
 
         except GrinParseError as e:
+            #error_msg = e.__str__()
             raise GrinParseError
 
         except GrinLexError as f: #come back to catching the exceptions
+            #error_msg = f.__str__()
             raise GrinLexError
 
     return grin_statements

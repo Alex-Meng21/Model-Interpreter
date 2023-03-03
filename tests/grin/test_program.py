@@ -167,10 +167,25 @@ class MyTestCase(unittest.TestCase):
 
     def test_labels(self):
 
-        token_list = read_input_for_testing("X: PRINT A")
-        self.interpret.process_grin(token_list)
+        token_list = read_input_for_testing("X:         PRINT A\n   CHUNK: ADD A 5")
+        self.interpret.assign_labels(token_list)
         a = self.interpret.label_dictionary[token_list[0][0].text()]
-        self.assertEqual(a, 1)
+        b = self.interpret.label_dictionary[token_list[1][0].text()]
+        self.assertEqual((a,b), (1,2))
+
+    def test_basic_goto(self):
+
+        token_list = read_input_for_testing("LET A 1\nGOTO 2\nADD A 2\nADD A 4")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 5)
+
+    def test_negative_goto(self):
+        token_list = read_input_for_testing("LET Z 5\nGOTO 5\nLET C 4\nPRINT C\nPRINT Z\nEND\nPRINT C\nPRINT Z\nGOTO -6")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[2][1].text()]
+        self.assertEqual((a,b), (5, 4))
 
 if __name__ == '__main__':
     unittest.main()

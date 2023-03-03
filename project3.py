@@ -14,15 +14,20 @@ from grin import *
 
 
 def main() -> None:
-    try:
-        myGrin = GrinInterpreter()
-        token_list = read_input()
-        myGrin.process_grin(token_list)
-        print(myGrin.var_dictionary)
-    except Exception as e:
-        print(e)
-    except ZeroDivisionError:
-        pass
+    #try:
+    myGrin = GrinInterpreter()
+    token_list = read_input()
+    myGrin.assign_labels(token_list)
+    #print(myGrin.label_dictionary)
+    myGrin.process_grin(token_list)
+
+    #except Exception as e:
+        #print(e)
+
+
+    #except ZeroDivisionError:
+        #pass
+
 
 
 if __name__ == '__main__':
