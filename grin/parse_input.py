@@ -3,7 +3,7 @@ from grin import *
 
 def read_input():
     grin_statements = []
-
+    j = 0
     while True:
         grin_statement = input()
         lines = grin_statement.strip().split('\n')
@@ -12,16 +12,15 @@ def read_input():
             break
         try:
             parsed_objs = parse(lines)
+            j+=1
             for i in parsed_objs:
                 grin_statements.append(list(i))
 
-        except GrinParseError as e:
-            #error_msg = e.__str__()
-            raise GrinParseError
+        except GrinParseError:
+            raise ParseError(f"Error during parsing: Line{j}")
 
         except GrinLexError as f: #come back to catching the exceptions
-            #error_msg = f.__str__()
-            raise GrinLexError
+            print(f)
 
     return grin_statements
 

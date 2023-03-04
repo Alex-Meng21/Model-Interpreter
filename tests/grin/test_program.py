@@ -273,11 +273,97 @@ class MyTestCase(unittest.TestCase):
         a = self.interpret.var_dictionary[token_list[0][1].text()]
         self.assertEqual(a, 10)
 
+
     def test_gosub_multiple_returns(self):
         token_list = read_input_for_testing("LET A 1\nGOSUB 5\nGOSUB 5\nPRINT A\nEND\nLET A 3\nRETURN\nPRINT A\nLET A 2\nGOSUB -4\nRETURN")
         self.interpret.process_grin(token_list)
         a = self.interpret.var_dictionary[token_list[0][1].text()]
         self.assertEqual(a, 3)
+
+    def test_gosub_equal_true(self):
+        token_list = read_input_for_testing("LET B 10\nGOSUB 3 IF B = 2\nSUB B 2\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 8)
+
+    def test_gosub_equal_false(self):
+        token_list = read_input_for_testing("LET B 4\nGOSUB 3 IF B = 2\nDIV B 2\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 2)
+
+    def test_gosub_not_equal_true(self):
+        token_list = read_input_for_testing(
+            "LET B 4\nLET A 10\nGOSUB 3 IF B <> A\nMULT A 2.5\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a,b),(5, 25))
+
+    def test_gosub_less_than_true(self):
+        token_list = read_input_for_testing(
+            "LET A 4\nLET B 10\nGOSUB 3 IF A < B\nMULT A 2.5\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (10.0, 5))
+
+    def test_gosub_less_than_false(self):
+        token_list = read_input_for_testing(
+            "LET A 4\nLET B 10\nGOSUB 3 IF B < A\nSUB A 2.5\nEND\nSUB B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual(a, 1.5)
+
+    def test_gosub_less_than_eq_true(self):
+        token_list = read_input_for_testing(
+            "LET B 4\nLET A 10\nGOSUB 3 IF B <= A\nDIV A 2\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (5, 5))
+
+    def test_gosub_less_eq_false(self):
+        token_list = read_input_for_testing(
+            "LET B 5\nLET A 2\nGOSUB 3 IF B <= A\nMULT A 2.5\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (5, 5))
+
+    def test_gosub_greater_than_true(self):
+        token_list = read_input_for_testing(
+            "LET B alex\nLET A sauce\nGOSUB 3 IF B < A\nMULT A 2\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (5, 'saucesauce'))
+
+    def test_gosub_greater_than_false(self):
+        token_list = read_input_for_testing(
+            "LET B 4\nLET A 10\nGOSUB 3 IF B > A\nSUB A 2.5\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (4, 7.5))
+
+    def test_gosub_greater_than_eq_true(self):
+        token_list = read_input_for_testing(
+            "LET B 4\nLET A 4\nGOSUB 2 IF B >= A\nMULT A 2.5\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (4, 4))
+
+    def test_gosub_greater_than_eq_false(self):
+        token_list = read_input_for_testing(
+            "LET B 4\nLET A 10\nGOSUB 3 IF B >= A\nMULT A 2.5\nEND\nLET B 5\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        b = self.interpret.var_dictionary[token_list[1][1].text()]
+        self.assertEqual((a, b), (4, 25))
+
 
 
 

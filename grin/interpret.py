@@ -248,7 +248,7 @@ class GrinInterpreter:
                     self.jump_lines(thing, token_list)
                     i = 0
 
-
+                #subroutines with conditions
                 elif token[i].kind() == GrinTokenKind.GOSUB and len(token) > 2:
                     comparison = token[i + 4].kind()
                     right_side = token[i + 5]
