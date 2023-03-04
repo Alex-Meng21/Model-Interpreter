@@ -20,4 +20,3 @@ from grin.parsing import *
 from grin.token import *
 from grin.parse_input import *
 from grin.interpret import *
-from exceptions import *

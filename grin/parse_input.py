@@ -1,4 +1,5 @@
 from grin import *
+from errors import *
 
 
 def read_input():
