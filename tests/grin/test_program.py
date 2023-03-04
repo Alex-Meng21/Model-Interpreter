@@ -1,6 +1,7 @@
 import unittest
 from grin import *
 from grin import GrinInterpreter
+from project3 import main
 
 class MyTestCase(unittest.TestCase):
 
@@ -171,7 +172,7 @@ class MyTestCase(unittest.TestCase):
         self.interpret.assign_labels(token_list)
         a = self.interpret.label_dictionary[token_list[0][0].text()]
         b = self.interpret.label_dictionary[token_list[1][0].text()]
-        self.assertEqual((a,b), (1,2))
+        self.assertEqual((a,b), (0,1))
 
     def test_basic_goto(self):
 
@@ -186,6 +187,99 @@ class MyTestCase(unittest.TestCase):
         a = self.interpret.var_dictionary[token_list[0][1].text()]
         b = self.interpret.var_dictionary[token_list[2][1].text()]
         self.assertEqual((a,b), (5, 4))
+
+    def test_goto_variable_int(self):
+        token_list = read_input_for_testing("LET B 2\nGOTO B\nSUB B 2\nLET B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 5)
+
+    def test_goto_if_equal_int(self):
+        token_list = read_input_for_testing("LET B 2\nGOTO 2 IF B = 2\nSUB B 2\nLET B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 5)
+
+    def test_goto_notequal_labels(self):
+        token_list = read_input_for_testing("LET B 2\nLET A 1\nGOTO 2 IF B = A\nSUB B 2\nMULT B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 0)
+
+
+    def test_less_than_equal_to_true(self):
+        token_list = read_input_for_testing("LET B 2\nGOTO 3 IF B <= 3\nSUB B 2\nMULT B 5\nADD B 10")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 12)
+
+    def test_less_than_equal_to_false(self):
+        token_list = read_input_for_testing("LET B 3\nLET A 1\nGOTO 2 IF B <= A\nSUB B 2\nMULT B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 5)
+
+    def test_greater_than_true(self):
+        token_list = read_input_for_testing("LET B 2\nLET A 1.5\nGOTO 2 IF B > A\nSUB B 2\nMULT B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 10)
+
+    def test_greater_than_false(self):
+        token_list = read_input_for_testing("LET B 12\nGOTO 2 IF B > 3\nSUB B 2\nDIV B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 2)
+
+    def test_less_than_true(self):
+        token_list = read_input_for_testing("LET B adam\nLET A lex\nGOTO 2 IF B < A\nSUB B 2\nMULT B 3")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 'adamadamadam')
+
+    def test_less_than_false(self):
+        token_list = read_input_for_testing("LET B 12\nLET A 10\nGOTO 2 IF B < A\nADD B C\nMULT B 2")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 24)
+
+    def test_greater_than_or_equal_to_true(self):
+        token_list = read_input_for_testing("LET B 2\nLET A 1\nGOTO 2 IF B >= A\nSUB B 2\nMULT B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 10)
+
+    def test_greater_than_or_equal_false(self):
+        token_list = read_input_for_testing("LET B 2\nGOTO 2 IF B >= 3\nADD B 2\nMULT B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 20)
+
+    def test_not_equal_true(self):
+        token_list = read_input_for_testing("LET B Alex\nLET A yay\nGOTO 2 IF B <> A\nSUB B 2\nMULT B 3")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 'AlexAlexAlex')
+
+    def test_not_equal_false(self):
+        token_list = read_input_for_testing("LET B 2\nLET A 2\nGOTO 2 IF B <> A\nSUB B 2\nMULT B 5")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 0)
+
+    def test_basic_gosub(self):
+        token_list = read_input_for_testing("LET A 1\nGOSUB 3\nADD A 4\nEND\nLET A 6\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 10)
+
+    def test_gosub_multiple_returns(self):
+        token_list = read_input_for_testing("LET A 1\nGOSUB 5\nGOSUB 5\nPRINT A\nEND\nLET A 3\nRETURN\nPRINT A\nLET A 2\nGOSUB -4\nRETURN")
+        self.interpret.process_grin(token_list)
+        a = self.interpret.var_dictionary[token_list[0][1].text()]
+        self.assertEqual(a, 3)
+
+
 
 if __name__ == '__main__':
     unittest.main()

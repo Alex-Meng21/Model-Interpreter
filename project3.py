@@ -20,9 +20,10 @@ def main() -> None:
     myGrin.assign_labels(token_list)
     #print(myGrin.label_dictionary)
     myGrin.process_grin(token_list)
+    #print(myGrin.var_dictionary)
 
     #except Exception as e:
-        #print(e)
+        #print(myGrin.var_dictionary)
 
 
     #except ZeroDivisionError:
