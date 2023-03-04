@@ -20,14 +20,13 @@ def main() -> None:
         myGrin.assign_labels(token_list)
         myGrin.process_grin(token_list)
 
-    except ParseError as e:
+    except GrinParseError as e:
         print(e)
     except GrinLexError as f:
         print(f)
 
-
-    except ZeroDivisionError:
-        pass
+    except GrinRuntimeError as g:
+        print(g)
 
 
 

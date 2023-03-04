@@ -1,13 +1,8 @@
 
 
 class GrinRuntimeError(Exception):
-
+    """A custom exception raised on all runtime errors in Grin"""
     def __init__(self, message):
-        super.__init__(message)
+        super().__init__(message)
         self.message = message
 
-class ParseError(Exception):
-
-    def __init__(self, message):
-        super.__init__(message)
-        self.message = message

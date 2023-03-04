@@ -1,7 +1,9 @@
 from grin.token import *
+from grin.errors import GrinRuntimeError
 class GrinInterpreter:
 
     def __init__(self):
+        """Initializes the interpreter to empty dictionaries and lists and the loop incrementer to 0"""
         self.var_dictionary = {}
         self.label_dictionary = {}
         self.gosub_indexes = []
@@ -9,14 +11,26 @@ class GrinInterpreter:
 
 
     def obtain_value_from_dict(self, token):
+        """Gets the value from the arg: token, obtaining the value from the
+        class attribute self.var_dictionary or the token's, value attribute
 
+        Args:
+            token: A single token object from the class GrinToken
+
+        Returns:
+            value: float, string, or integer value"""
         if token.kind() == GrinTokenKind.IDENTIFIER:
             value = self.var_dictionary.get(token.value(), 0)
         else:
-            value = token.value() #or value()
+            value = token.value()
         return value
 
     def assign_labels(self, token_list):
+        """Loops through all the tokens from read_input() and assigns all the labels
+        to their line numbers
+
+        Args:
+            token_list: a nested list containing list of token objects from the GrinToken class"""
         i = 1
         for token in token_list:
             if token[0].kind() == GrinTokenKind.IDENTIFIER:
@@ -28,15 +42,22 @@ class GrinInterpreter:
 
 
     def jump_lines(self, label, token_list):
+        """Executes the GOTO and GOSUB commands. Raises GrinRunTimeError for invalid values
+        following the keywords
+
+        Args:
+            label: the token object following the GOTO or GOSUB keyword
+            token_list: a nested list containing list of token objects from the GrinToken class
+        """
 
         if label.kind() == GrinTokenKind.LITERAL_STRING:
             if label.value() not in self.label_dictionary.keys():
-                raise RuntimeError("Cannot got to label that doesn't exist")
+                raise GrinRuntimeError(f"Error: Cannot got to label that doesn't exist: Line {self.counter+1}")
 
             self.counter = self.label_dictionary.get(label.value(), 0)
         elif label.kind() == GrinTokenKind.IDENTIFIER:
             if label.text() not in self.var_dictionary:
-                raise RuntimeError("variable does not exist")
+                raise GrinRuntimeError(f"Error: Variable does not exist so infinite loop would occur: Line {self.counter+1}")
             value = self.var_dictionary.get(label.text(), 0)
 
             if isinstance(value, str):
@@ -44,32 +65,40 @@ class GrinInterpreter:
                     self.counter = self.label_dictionary[value]
             elif isinstance(value, int):
                 if value == 0:
-                    raise RuntimeError(" Infinite loop")
+                    raise GrinRuntimeError(f"Error: Infinite loop -> Line: {self.counter+1}")
 
                 elif (value + self.counter > len(token_list)) or value + self.counter <= 0:
-                    raise RuntimeError(f'Jumping out of range')
+                    raise GrinRuntimeError(f'Error: Jumping out of range of Grin statements Line: {self.counter+1}')
 
                 self.counter += value
 
             else:
-                raise RuntimeError("GOTO must be followed by an integer or string")
+                raise GrinRuntimeError(f"Error: GOTO/GOSUB must be followed by an integer or string Line: {self.counter+1}")
 
         else:
 
             if label.value() == 0:
-                raise RuntimeError("infinite loop")
+                raise GrinRuntimeError(f"Error: GOTO/GOSUB cannot be 0 -> infinite loop: Line{self.counter+1}")
             elif (label.value() + self.counter) > len(token_list) or (
                     self.counter + label.value()) <= 0:
-                raise RuntimeError("out of range")  # custom exception
+                raise GrinRuntimeError(f'Error: Jumping out of range of Grin statements Line: {self.counter+1}')
 
             self.counter += label.value()
 
 
 
     def process_grin(self, token_list):
+        """Loops through nested list of parsed token objects and executes all the
+         Grin commands. Raises GrinRunTimeError for invalid arithmetic operations, inputs,
+         or RETURN statements without GOSUB
+
+         Args:
+             token_list: a nested list containing lists of token objects from the GrinToken class
+             returned by read_input()"""
+
+
         i = 0
         while self.counter < len(token_list):
-            #print('line:', self.counter, self.gosub_indexes)
 
             token = token_list[self.counter]
 
@@ -78,7 +107,7 @@ class GrinInterpreter:
 
             elif token[i].kind() == GrinTokenKind.RETURN:
                 if len(self.gosub_indexes) == 0:
-                    raise RuntimeError("Return statements must have previous GOSUB")
+                    raise GrinRuntimeError(f"Error: Return statements must have previous GOSUB statement: error at Line {self.counter+1}")
                 else:
                     self.counter = self.gosub_indexes[-1]
                     del self.gosub_indexes[-1]
@@ -305,16 +334,15 @@ class GrinInterpreter:
                     i = 0
 
             except TypeError:
-                raise TypeError('Tried commands on invalid types: int to string or float to string')
+                raise GrinRuntimeError(f'Error: Tried arithmetic commands on invalid types: Line {self.counter+1}')
 
             except ZeroDivisionError:
-                raise ZeroDivisionError("Cannot divide by zero")
+                raise GrinRuntimeError(f"Error: Cannot divide by zero: Line {self.counter+1}")
 
             except ValueError:
-                raise ValueError("value error occured")
+                raise GrinRuntimeError(f"Error: INNUM must be float or integers: Line {self.counter+1}")
 
-            except IndexError as e:
-                print(e)
+
 
 
 

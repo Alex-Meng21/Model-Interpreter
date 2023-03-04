@@ -1,7 +1,7 @@
 import unittest
 from grin import *
 from grin import GrinInterpreter
-from project3 import main
+
 
 class MyTestCase(unittest.TestCase):
 
@@ -365,7 +365,47 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual((a, b), (4, 25))
 
 
+    def test_division_by_0(self):
+        token_list = read_input_for_testing("LET A 2\nDIV A 0")
 
+        a = self.interpret
+        with self.assertRaises(GrinRuntimeError):
+            a.process_grin(token_list)
+
+    def test_goto_gosub_0(self):
+        token_list = read_input_for_testing("LET A 2\nGOTO 0")
+
+        a = self.interpret
+        with self.assertRaises(GrinRuntimeError):
+            a.process_grin(token_list)
+
+    def test_goto_gosub_out_of_range(self):
+        token_list = read_input_for_testing("LET A 2\nGOSUB 8")
+
+        a = self.interpret
+        with self.assertRaises(GrinRuntimeError):
+            a.process_grin(token_list)
+
+    def test_return_with_no_gosub(self):
+        token_list = read_input_for_testing("LET A 2\nRETURN")
+
+        a = self.interpret
+        with self.assertRaises(GrinRuntimeError):
+            a.process_grin(token_list)
+
+    def test_goto_gosub_label_undefined(self):
+        token_list = read_input_for_testing("LET A 2\nGOTO HI")
+
+        a = self.interpret
+        with self.assertRaises(GrinRuntimeError):
+            a.process_grin(token_list)
+
+    def test_goto_gosub_var_undefined(self):
+        token_list = read_input_for_testing("LET A 2\nGOSUB L")
+
+        a = self.interpret
+        with self.assertRaises(GrinRuntimeError):
+            a.process_grin(token_list)
 
 if __name__ == '__main__':
     unittest.main()
